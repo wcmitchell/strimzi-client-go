@@ -13,6 +13,7 @@ import (
 func (in *Kafka) DeepCopyInto(out *Kafka) {
 	*out = *in
 	out.TypeMeta = in.TypeMeta
+	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
 	if in.ApiVersion != nil {
 		in, out := &in.ApiVersion, &out.ApiVersion
 		*out = new(string)
@@ -22,11 +23,6 @@ func (in *Kafka) DeepCopyInto(out *Kafka) {
 		in, out := &in.Kind, &out.Kind
 		*out = new(string)
 		**out = **in
-	}
-	if in.Metadata != nil {
-		in, out := &in.Metadata, &out.Metadata
-		*out = new(v1.JSON)
-		(*in).DeepCopyInto(*out)
 	}
 	if in.Spec != nil {
 		in, out := &in.Spec, &out.Spec
@@ -62,6 +58,7 @@ func (in *Kafka) DeepCopyObject() runtime.Object {
 func (in *KafkaBridge) DeepCopyInto(out *KafkaBridge) {
 	*out = *in
 	out.TypeMeta = in.TypeMeta
+	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
 	if in.ApiVersion != nil {
 		in, out := &in.ApiVersion, &out.ApiVersion
 		*out = new(string)
@@ -71,11 +68,6 @@ func (in *KafkaBridge) DeepCopyInto(out *KafkaBridge) {
 		in, out := &in.Kind, &out.Kind
 		*out = new(string)
 		**out = **in
-	}
-	if in.Metadata != nil {
-		in, out := &in.Metadata, &out.Metadata
-		*out = new(v1.JSON)
-		(*in).DeepCopyInto(*out)
 	}
 	if in.Spec != nil {
 		in, out := &in.Spec, &out.Spec
@@ -4645,6 +4637,7 @@ func (in *KafkaBridgeStatusConditionsElem) DeepCopy() *KafkaBridgeStatusConditio
 func (in *KafkaConnect) DeepCopyInto(out *KafkaConnect) {
 	*out = *in
 	out.TypeMeta = in.TypeMeta
+	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
 	if in.ApiVersion != nil {
 		in, out := &in.ApiVersion, &out.ApiVersion
 		*out = new(string)
@@ -4654,11 +4647,6 @@ func (in *KafkaConnect) DeepCopyInto(out *KafkaConnect) {
 		in, out := &in.Kind, &out.Kind
 		*out = new(string)
 		**out = **in
-	}
-	if in.Metadata != nil {
-		in, out := &in.Metadata, &out.Metadata
-		*out = new(v1.JSON)
-		(*in).DeepCopyInto(*out)
 	}
 	if in.Spec != nil {
 		in, out := &in.Spec, &out.Spec
@@ -12786,6 +12774,7 @@ func (in *KafkaConnectStatusConnectorPluginsElem) DeepCopy() *KafkaConnectStatus
 func (in *KafkaConnector) DeepCopyInto(out *KafkaConnector) {
 	*out = *in
 	out.TypeMeta = in.TypeMeta
+	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
 	if in.ApiVersion != nil {
 		in, out := &in.ApiVersion, &out.ApiVersion
 		*out = new(string)
@@ -12795,11 +12784,6 @@ func (in *KafkaConnector) DeepCopyInto(out *KafkaConnector) {
 		in, out := &in.Kind, &out.Kind
 		*out = new(string)
 		**out = **in
-	}
-	if in.Metadata != nil {
-		in, out := &in.Metadata, &out.Metadata
-		*out = new(v1.JSON)
-		(*in).DeepCopyInto(*out)
 	}
 	if in.Spec != nil {
 		in, out := &in.Spec, &out.Spec
@@ -13168,6 +13152,7 @@ func (in *KafkaList) DeepCopyObject() runtime.Object {
 func (in *KafkaMirrorMaker) DeepCopyInto(out *KafkaMirrorMaker) {
 	*out = *in
 	out.TypeMeta = in.TypeMeta
+	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
 	if in.ApiVersion != nil {
 		in, out := &in.ApiVersion, &out.ApiVersion
 		*out = new(string)
@@ -13177,11 +13162,6 @@ func (in *KafkaMirrorMaker) DeepCopyInto(out *KafkaMirrorMaker) {
 		in, out := &in.Kind, &out.Kind
 		*out = new(string)
 		**out = **in
-	}
-	if in.Metadata != nil {
-		in, out := &in.Metadata, &out.Metadata
-		*out = new(v1.JSON)
-		(*in).DeepCopyInto(*out)
 	}
 	if in.Spec != nil {
 		in, out := &in.Spec, &out.Spec
@@ -13217,6 +13197,7 @@ func (in *KafkaMirrorMaker) DeepCopyObject() runtime.Object {
 func (in *KafkaMirrorMaker2) DeepCopyInto(out *KafkaMirrorMaker2) {
 	*out = *in
 	out.TypeMeta = in.TypeMeta
+	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
 	if in.ApiVersion != nil {
 		in, out := &in.ApiVersion, &out.ApiVersion
 		*out = new(string)
@@ -13226,11 +13207,6 @@ func (in *KafkaMirrorMaker2) DeepCopyInto(out *KafkaMirrorMaker2) {
 		in, out := &in.Kind, &out.Kind
 		*out = new(string)
 		**out = **in
-	}
-	if in.Metadata != nil {
-		in, out := &in.Metadata, &out.Metadata
-		*out = new(v1.JSON)
-		(*in).DeepCopyInto(*out)
 	}
 	if in.Spec != nil {
 		in, out := &in.Spec, &out.Spec
@@ -25952,6 +25928,7 @@ func (in *KafkaMirrorMakerStatusConditionsElem) DeepCopy() *KafkaMirrorMakerStat
 func (in *KafkaNodePool) DeepCopyInto(out *KafkaNodePool) {
 	*out = *in
 	out.TypeMeta = in.TypeMeta
+	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
 	if in.ApiVersion != nil {
 		in, out := &in.ApiVersion, &out.ApiVersion
 		*out = new(string)
@@ -25961,11 +25938,6 @@ func (in *KafkaNodePool) DeepCopyInto(out *KafkaNodePool) {
 		in, out := &in.Kind, &out.Kind
 		*out = new(string)
 		**out = **in
-	}
-	if in.Metadata != nil {
-		in, out := &in.Metadata, &out.Metadata
-		*out = new(v1.JSON)
-		(*in).DeepCopyInto(*out)
 	}
 	if in.Spec != nil {
 		in, out := &in.Spec, &out.Spec
@@ -30013,6 +29985,7 @@ func (in *KafkaNodePoolStatusConditionsElem) DeepCopy() *KafkaNodePoolStatusCond
 func (in *KafkaRebalance) DeepCopyInto(out *KafkaRebalance) {
 	*out = *in
 	out.TypeMeta = in.TypeMeta
+	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
 	if in.ApiVersion != nil {
 		in, out := &in.ApiVersion, &out.ApiVersion
 		*out = new(string)
@@ -30022,11 +29995,6 @@ func (in *KafkaRebalance) DeepCopyInto(out *KafkaRebalance) {
 		in, out := &in.Kind, &out.Kind
 		*out = new(string)
 		**out = **in
-	}
-	if in.Metadata != nil {
-		in, out := &in.Metadata, &out.Metadata
-		*out = new(v1.JSON)
-		(*in).DeepCopyInto(*out)
 	}
 	if in.Spec != nil {
 		in, out := &in.Spec, &out.Spec
@@ -56360,6 +56328,7 @@ func (in *KafkaStatusListenersElemAddressesElem) DeepCopy() *KafkaStatusListener
 func (in *KafkaTopic) DeepCopyInto(out *KafkaTopic) {
 	*out = *in
 	out.TypeMeta = in.TypeMeta
+	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
 	if in.ApiVersion != nil {
 		in, out := &in.ApiVersion, &out.ApiVersion
 		*out = new(string)
@@ -56369,11 +56338,6 @@ func (in *KafkaTopic) DeepCopyInto(out *KafkaTopic) {
 		in, out := &in.Kind, &out.Kind
 		*out = new(string)
 		**out = **in
-	}
-	if in.Metadata != nil {
-		in, out := &in.Metadata, &out.Metadata
-		*out = new(v1.JSON)
-		(*in).DeepCopyInto(*out)
 	}
 	if in.Spec != nil {
 		in, out := &in.Spec, &out.Spec
@@ -56593,6 +56557,7 @@ func (in *KafkaTopicStatusReplicasChange) DeepCopy() *KafkaTopicStatusReplicasCh
 func (in *KafkaUser) DeepCopyInto(out *KafkaUser) {
 	*out = *in
 	out.TypeMeta = in.TypeMeta
+	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
 	if in.ApiVersion != nil {
 		in, out := &in.ApiVersion, &out.ApiVersion
 		*out = new(string)
@@ -56602,11 +56567,6 @@ func (in *KafkaUser) DeepCopyInto(out *KafkaUser) {
 		in, out := &in.Kind, &out.Kind
 		*out = new(string)
 		**out = **in
-	}
-	if in.Metadata != nil {
-		in, out := &in.Metadata, &out.Metadata
-		*out = new(v1.JSON)
-		(*in).DeepCopyInto(*out)
 	}
 	if in.Spec != nil {
 		in, out := &in.Spec, &out.Spec

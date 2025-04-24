@@ -17,6 +17,7 @@ import (
 // KafkaMirrorMaker2
 type KafkaMirrorMaker2 struct {
 	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	// APIVersion defines the versioned schema of this representation of an object.
 	// Servers should convert recognized schemas to the latest internal value, and may
@@ -29,9 +30,6 @@ type KafkaMirrorMaker2 struct {
 	// be updated. In CamelCase. More info:
 	// https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 	Kind *string `json:"kind,omitempty" yaml:"kind,omitempty" mapstructure:"kind,omitempty"`
-
-	// Metadata corresponds to the JSON schema field "metadata".
-	Metadata *apiextensions.JSON `json:"metadata,omitempty" yaml:"metadata,omitempty" mapstructure:"metadata,omitempty"`
 
 	// The specification of the Kafka MirrorMaker 2 cluster.
 	Spec *KafkaMirrorMaker2Spec `json:"spec,omitempty" yaml:"spec,omitempty" mapstructure:"spec,omitempty"`

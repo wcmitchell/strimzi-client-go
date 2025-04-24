@@ -13,6 +13,7 @@ import (
 func (in *StrimziPodSet) DeepCopyInto(out *StrimziPodSet) {
 	*out = *in
 	out.TypeMeta = in.TypeMeta
+	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
 	if in.ApiVersion != nil {
 		in, out := &in.ApiVersion, &out.ApiVersion
 		*out = new(string)
@@ -22,11 +23,6 @@ func (in *StrimziPodSet) DeepCopyInto(out *StrimziPodSet) {
 		in, out := &in.Kind, &out.Kind
 		*out = new(string)
 		**out = **in
-	}
-	if in.Metadata != nil {
-		in, out := &in.Metadata, &out.Metadata
-		*out = new(v1.JSON)
-		(*in).DeepCopyInto(*out)
 	}
 	if in.Spec != nil {
 		in, out := &in.Spec, &out.Spec
