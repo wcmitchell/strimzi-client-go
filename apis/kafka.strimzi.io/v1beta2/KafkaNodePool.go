@@ -7,18 +7,16 @@ import (
 	"fmt"
 	"reflect"
 
-	apiextensions "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:subresource:metadata
 // KafkaNodePool
 type KafkaNodePool struct {
 	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
-
 	// APIVersion defines the versioned schema of this representation of an object.
 	// Servers should convert recognized schemas to the latest internal value, and may
 	// reject unrecognized values. More info:
@@ -31,12 +29,17 @@ type KafkaNodePool struct {
 	// https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 	Kind *string `json:"kind,omitempty" yaml:"kind,omitempty" mapstructure:"kind,omitempty"`
 
+	// Metadata corresponds to the JSON schema field "metadata".
+	Metadata KafkaNodePoolMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty" mapstructure:"metadata,omitempty"`
+
 	// The specification of the KafkaNodePool.
 	Spec *KafkaNodePoolSpec `json:"spec,omitempty" yaml:"spec,omitempty" mapstructure:"spec,omitempty"`
 
 	// The status of the KafkaNodePool.
 	Status *KafkaNodePoolStatus `json:"status,omitempty" yaml:"status,omitempty" mapstructure:"status,omitempty"`
 }
+
+type KafkaNodePoolMetadata map[string]runtime.RawExtension
 
 // +kubebuilder:object:root=true
 // KafkaNodePoolList contains a list of instances.
@@ -47,8 +50,6 @@ type KafkaNodePoolList struct {
 	// A list of KafkaNodePool objects.
 	Items []KafkaNodePool `json:"items,omitempty"`
 }
-
-//type KafkaNodePoolMetadata map[string]interface{}
 
 // The specification of the KafkaNodePool.
 type KafkaNodePoolSpec struct {
@@ -111,10 +112,10 @@ type KafkaNodePoolSpecResources struct {
 	Claims []KafkaNodePoolSpecResourcesClaimsElem `json:"claims,omitempty" yaml:"claims,omitempty" mapstructure:"claims,omitempty"`
 
 	// Limits corresponds to the JSON schema field "limits".
-	Limits *apiextensions.JSON `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
+	Limits KafkaNodePoolSpecResourcesLimits `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
 
 	// Requests corresponds to the JSON schema field "requests".
-	Requests *apiextensions.JSON `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
+	Requests KafkaNodePoolSpecResourcesRequests `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
 }
 
 type KafkaNodePoolSpecResourcesClaimsElem struct {
@@ -122,9 +123,9 @@ type KafkaNodePoolSpecResourcesClaimsElem struct {
 	Name *string `json:"name,omitempty" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-//type KafkaNodePoolSpecResourcesLimits map[string]interface{}
+type KafkaNodePoolSpecResourcesLimits map[string]runtime.RawExtension
 
-//type KafkaNodePoolSpecResourcesRequests map[string]interface{}
+type KafkaNodePoolSpecResourcesRequests map[string]runtime.RawExtension
 
 type KafkaNodePoolSpecRolesElem string
 

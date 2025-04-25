@@ -7,18 +7,16 @@ import (
 	"fmt"
 	"reflect"
 
-	apiextensions "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:subresource:metadata
 // KafkaConnect
 type KafkaConnect struct {
 	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
-
 	// APIVersion defines the versioned schema of this representation of an object.
 	// Servers should convert recognized schemas to the latest internal value, and may
 	// reject unrecognized values. More info:
@@ -31,12 +29,17 @@ type KafkaConnect struct {
 	// https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 	Kind *string `json:"kind,omitempty" yaml:"kind,omitempty" mapstructure:"kind,omitempty"`
 
+	// Metadata corresponds to the JSON schema field "metadata".
+	Metadata KafkaConnectMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty" mapstructure:"metadata,omitempty"`
+
 	// The specification of the Kafka Connect cluster.
 	Spec *KafkaConnectSpec `json:"spec,omitempty" yaml:"spec,omitempty" mapstructure:"spec,omitempty"`
 
 	// The status of the Kafka Connect cluster.
 	Status *KafkaConnectStatus `json:"status,omitempty" yaml:"status,omitempty" mapstructure:"status,omitempty"`
 }
+
+type KafkaConnectMetadata map[string]runtime.RawExtension
 
 // +kubebuilder:object:root=true
 // KafkaConnectList contains a list of instances.
@@ -47,8 +50,6 @@ type KafkaConnectList struct {
 	// A list of KafkaConnect objects.
 	Items []KafkaConnect `json:"items,omitempty"`
 }
-
-//type KafkaConnectMetadata map[string]interface{}
 
 // The specification of the Kafka Connect cluster.
 type KafkaConnectSpec struct {
@@ -70,7 +71,7 @@ type KafkaConnectSpec struct {
 	// bootstrap.servers, consumer.interceptor.classes, producer.interceptor.classes
 	// (with the exception of: ssl.endpoint.identification.algorithm,
 	// ssl.cipher.suites, ssl.protocol, ssl.enabled.protocols).
-	Config *apiextensions.JSON `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
+	Config KafkaConnectSpecConfig `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
 
 	// Pass data from Secrets or ConfigMaps to the Kafka Connect pods and use them to
 	// configure connectors.
@@ -434,10 +435,10 @@ type KafkaConnectSpecBuildResources struct {
 	Claims []KafkaConnectSpecBuildResourcesClaimsElem `json:"claims,omitempty" yaml:"claims,omitempty" mapstructure:"claims,omitempty"`
 
 	// Limits corresponds to the JSON schema field "limits".
-	Limits *apiextensions.JSON `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
+	Limits KafkaConnectSpecBuildResourcesLimits `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
 
 	// Requests corresponds to the JSON schema field "requests".
-	Requests *apiextensions.JSON `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
+	Requests KafkaConnectSpecBuildResourcesRequests `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
 }
 
 type KafkaConnectSpecBuildResourcesClaimsElem struct {
@@ -445,16 +446,16 @@ type KafkaConnectSpecBuildResourcesClaimsElem struct {
 	Name *string `json:"name,omitempty" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-//type KafkaConnectSpecBuildResourcesLimits map[string]interface{}
+type KafkaConnectSpecBuildResourcesLimits map[string]runtime.RawExtension
 
-//type KafkaConnectSpecBuildResourcesRequests map[string]interface{}
+type KafkaConnectSpecBuildResourcesRequests map[string]runtime.RawExtension
 
 // The Kafka Connect configuration. Properties with the following prefixes cannot
 // be set: ssl., sasl., security., listeners, plugin.path, rest.,
 // bootstrap.servers, consumer.interceptor.classes, producer.interceptor.classes
 // (with the exception of: ssl.endpoint.identification.algorithm,
 // ssl.cipher.suites, ssl.protocol, ssl.enabled.protocols).
-//type KafkaConnectSpecConfig map[string]interface{}
+type KafkaConnectSpecConfig map[string]runtime.RawExtension
 
 // Pass data from Secrets or ConfigMaps to the Kafka Connect pods and use them to
 // configure connectors.
@@ -761,10 +762,10 @@ type KafkaConnectSpecResources struct {
 	Claims []KafkaConnectSpecResourcesClaimsElem `json:"claims,omitempty" yaml:"claims,omitempty" mapstructure:"claims,omitempty"`
 
 	// Limits corresponds to the JSON schema field "limits".
-	Limits *apiextensions.JSON `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
+	Limits KafkaConnectSpecResourcesLimits `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
 
 	// Requests corresponds to the JSON schema field "requests".
-	Requests *apiextensions.JSON `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
+	Requests KafkaConnectSpecResourcesRequests `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
 }
 
 type KafkaConnectSpecResourcesClaimsElem struct {
@@ -772,9 +773,9 @@ type KafkaConnectSpecResourcesClaimsElem struct {
 	Name *string `json:"name,omitempty" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-//type KafkaConnectSpecResourcesLimits map[string]interface{}
+type KafkaConnectSpecResourcesLimits map[string]runtime.RawExtension
 
-//type KafkaConnectSpecResourcesRequests map[string]interface{}
+type KafkaConnectSpecResourcesRequests map[string]runtime.RawExtension
 
 // Template for Kafka Connect and Kafka MirrorMaker 2 resources. The template
 // allows users to specify how the `Pods`, `Service`, and other services are

@@ -3,23 +3,20 @@
 package v1beta2
 
 import (
-	 "encoding/json"
+	"encoding/json"
 	"fmt"
 	"reflect"
 
-	apiextensions "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
+	"k8s.io/apimachinery/pkg/runtime"
 )
-
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:subresource:metadata
 // Kafka
 type Kafka struct {
 	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	// APIVersion defines the versioned schema of this representation of an object.
 	// Servers should convert recognized schemas to the latest internal value, and may
@@ -32,6 +29,9 @@ type Kafka struct {
 	// be updated. In CamelCase. More info:
 	// https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 	Kind *string `json:"kind,omitempty" yaml:"kind,omitempty" mapstructure:"kind,omitempty"`
+
+	// Metadata corresponds to the JSON schema field "metadata".
+	Metadata KafkaMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty" mapstructure:"metadata,omitempty"`
 
 	// The specification of the Kafka and ZooKeeper clusters, and Topic Operator.
 	Spec *KafkaSpec `json:"spec,omitempty" yaml:"spec,omitempty" mapstructure:"spec,omitempty"`
@@ -50,7 +50,7 @@ type KafkaList struct {
 	Items []Kafka `json:"items,omitempty"`
 }
 
-////////////////////////////type KafkaMetadata map[string]interface{}
+type KafkaMetadata map[string]runtime.RawExtension
 
 // The specification of the Kafka and ZooKeeper clusters, and Topic Operator.
 type KafkaSpec struct {
@@ -188,7 +188,7 @@ type KafkaSpecCruiseControl struct {
 	// webserver.http.cors.enabled, webserver.http.cors.origin,
 	// webserver.http.cors.exposeheaders, webserver.security.enable,
 	// webserver.ssl.enable).
-	Config *apiextensions.JSON `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
+	Config KafkaSpecCruiseControlConfig `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
 
 	// The container image used for Cruise Control pods. If no image name is
 	// explicitly specified, the image name corresponds to the name specified in the
@@ -345,7 +345,7 @@ type KafkaSpecCruiseControlBrokerCapacityOverridesElem struct {
 // webserver.http.cors.enabled, webserver.http.cors.origin,
 // webserver.http.cors.exposeheaders, webserver.security.enable,
 // webserver.ssl.enable).
-//type KafkaSpecCruiseControlConfig map[string]interface{}
+type KafkaSpecCruiseControlConfig map[string]runtime.RawExtension
 
 // JVM Options for the Cruise Control container.
 type KafkaSpecCruiseControlJvmOptions struct {
@@ -499,10 +499,10 @@ type KafkaSpecCruiseControlResources struct {
 	Claims []KafkaSpecCruiseControlResourcesClaimsElem `json:"claims,omitempty" yaml:"claims,omitempty" mapstructure:"claims,omitempty"`
 
 	// Limits corresponds to the JSON schema field "limits".
-	Limits *apiextensions.JSON `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
+	Limits KafkaSpecCruiseControlResourcesLimits `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
 
 	// Requests corresponds to the JSON schema field "requests".
-	Requests *apiextensions.JSON `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
+	Requests KafkaSpecCruiseControlResourcesRequests `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
 }
 
 type KafkaSpecCruiseControlResourcesClaimsElem struct {
@@ -510,9 +510,9 @@ type KafkaSpecCruiseControlResourcesClaimsElem struct {
 	Name *string `json:"name,omitempty" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-//type KafkaSpecCruiseControlResourcesLimits map[string]interface{}
+type KafkaSpecCruiseControlResourcesLimits map[string]runtime.RawExtension
 
-//type KafkaSpecCruiseControlResourcesRequests map[string]interface{}
+type KafkaSpecCruiseControlResourcesRequests map[string]runtime.RawExtension
 
 // Template to specify how Cruise Control resources, `Deployments` and `Pods`, are
 // generated.
@@ -1838,10 +1838,10 @@ type KafkaSpecCruiseControlTlsSidecarResources struct {
 	Claims []KafkaSpecCruiseControlTlsSidecarResourcesClaimsElem `json:"claims,omitempty" yaml:"claims,omitempty" mapstructure:"claims,omitempty"`
 
 	// Limits corresponds to the JSON schema field "limits".
-	Limits *apiextensions.JSON `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
+	Limits KafkaSpecCruiseControlTlsSidecarResourcesLimits `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
 
 	// Requests corresponds to the JSON schema field "requests".
-	Requests *apiextensions.JSON `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
+	Requests KafkaSpecCruiseControlTlsSidecarResourcesRequests `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
 }
 
 type KafkaSpecCruiseControlTlsSidecarResourcesClaimsElem struct {
@@ -1849,9 +1849,9 @@ type KafkaSpecCruiseControlTlsSidecarResourcesClaimsElem struct {
 	Name *string `json:"name,omitempty" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-//type KafkaSpecCruiseControlTlsSidecarResourcesLimits map[string]interface{}
+type KafkaSpecCruiseControlTlsSidecarResourcesLimits map[string]runtime.RawExtension
 
-//type KafkaSpecCruiseControlTlsSidecarResourcesRequests map[string]interface{}
+type KafkaSpecCruiseControlTlsSidecarResourcesRequests map[string]runtime.RawExtension
 
 // Configuration of the Entity Operator.
 type KafkaSpecEntityOperator struct {
@@ -3364,10 +3364,10 @@ type KafkaSpecEntityOperatorTlsSidecarResources struct {
 	Claims []KafkaSpecEntityOperatorTlsSidecarResourcesClaimsElem `json:"claims,omitempty" yaml:"claims,omitempty" mapstructure:"claims,omitempty"`
 
 	// Limits corresponds to the JSON schema field "limits".
-	Limits *apiextensions.JSON `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
+	Limits KafkaSpecEntityOperatorTlsSidecarResourcesLimits `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
 
 	// Requests corresponds to the JSON schema field "requests".
-	Requests *apiextensions.JSON `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
+	Requests KafkaSpecEntityOperatorTlsSidecarResourcesRequests `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
 }
 
 type KafkaSpecEntityOperatorTlsSidecarResourcesClaimsElem struct {
@@ -3375,9 +3375,9 @@ type KafkaSpecEntityOperatorTlsSidecarResourcesClaimsElem struct {
 	Name *string `json:"name,omitempty" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-//type KafkaSpecEntityOperatorTlsSidecarResourcesLimits map[string]interface{}
+type KafkaSpecEntityOperatorTlsSidecarResourcesLimits map[string]runtime.RawExtension
 
-//type KafkaSpecEntityOperatorTlsSidecarResourcesRequests map[string]interface{}
+type KafkaSpecEntityOperatorTlsSidecarResourcesRequests map[string]runtime.RawExtension
 
 // Configuration of the Topic Operator.
 type KafkaSpecEntityOperatorTopicOperator struct {
@@ -3540,10 +3540,10 @@ type KafkaSpecEntityOperatorTopicOperatorResources struct {
 	Claims []KafkaSpecEntityOperatorTopicOperatorResourcesClaimsElem `json:"claims,omitempty" yaml:"claims,omitempty" mapstructure:"claims,omitempty"`
 
 	// Limits corresponds to the JSON schema field "limits".
-	Limits *apiextensions.JSON `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
+	Limits KafkaSpecEntityOperatorTopicOperatorResourcesLimits `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
 
 	// Requests corresponds to the JSON schema field "requests".
-	Requests *apiextensions.JSON `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
+	Requests KafkaSpecEntityOperatorTopicOperatorResourcesRequests `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
 }
 
 type KafkaSpecEntityOperatorTopicOperatorResourcesClaimsElem struct {
@@ -3551,9 +3551,9 @@ type KafkaSpecEntityOperatorTopicOperatorResourcesClaimsElem struct {
 	Name *string `json:"name,omitempty" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-//type KafkaSpecEntityOperatorTopicOperatorResourcesLimits map[string]interface{}
+type KafkaSpecEntityOperatorTopicOperatorResourcesLimits map[string]runtime.RawExtension
 
-//type KafkaSpecEntityOperatorTopicOperatorResourcesRequests map[string]interface{}
+type KafkaSpecEntityOperatorTopicOperatorResourcesRequests map[string]runtime.RawExtension
 
 // Pod startup checking.
 type KafkaSpecEntityOperatorTopicOperatorStartupProbe struct {
@@ -3737,10 +3737,10 @@ type KafkaSpecEntityOperatorUserOperatorResources struct {
 	Claims []KafkaSpecEntityOperatorUserOperatorResourcesClaimsElem `json:"claims,omitempty" yaml:"claims,omitempty" mapstructure:"claims,omitempty"`
 
 	// Limits corresponds to the JSON schema field "limits".
-	Limits *apiextensions.JSON `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
+	Limits KafkaSpecEntityOperatorUserOperatorResourcesLimits `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
 
 	// Requests corresponds to the JSON schema field "requests".
-	Requests *apiextensions.JSON `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
+	Requests KafkaSpecEntityOperatorUserOperatorResourcesRequests `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
 }
 
 type KafkaSpecEntityOperatorUserOperatorResourcesClaimsElem struct {
@@ -3748,9 +3748,9 @@ type KafkaSpecEntityOperatorUserOperatorResourcesClaimsElem struct {
 	Name *string `json:"name,omitempty" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-//type KafkaSpecEntityOperatorUserOperatorResourcesLimits map[string]interface{}
+type KafkaSpecEntityOperatorUserOperatorResourcesLimits map[string]runtime.RawExtension
 
-//type KafkaSpecEntityOperatorUserOperatorResourcesRequests map[string]interface{}
+type KafkaSpecEntityOperatorUserOperatorResourcesRequests map[string]runtime.RawExtension
 
 // As of Strimzi 0.35.0, JMXTrans is not supported anymore and this option is
 // ignored.
@@ -3829,10 +3829,10 @@ type KafkaSpecJmxTransResources struct {
 	Claims []KafkaSpecJmxTransResourcesClaimsElem `json:"claims,omitempty" yaml:"claims,omitempty" mapstructure:"claims,omitempty"`
 
 	// Limits corresponds to the JSON schema field "limits".
-	Limits *apiextensions.JSON `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
+	Limits KafkaSpecJmxTransResourcesLimits `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
 
 	// Requests corresponds to the JSON schema field "requests".
-	Requests *apiextensions.JSON `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
+	Requests KafkaSpecJmxTransResourcesRequests `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
 }
 
 type KafkaSpecJmxTransResourcesClaimsElem struct {
@@ -3840,9 +3840,9 @@ type KafkaSpecJmxTransResourcesClaimsElem struct {
 	Name *string `json:"name,omitempty" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-//type KafkaSpecJmxTransResourcesLimits map[string]interface{}
+type KafkaSpecJmxTransResourcesLimits map[string]runtime.RawExtension
 
-//type KafkaSpecJmxTransResourcesRequests map[string]interface{}
+type KafkaSpecJmxTransResourcesRequests map[string]runtime.RawExtension
 
 // Template for JmxTrans resources.
 type KafkaSpecJmxTransTemplate struct {
@@ -4859,7 +4859,7 @@ type KafkaSpecKafka struct {
 	// cruise.control.metrics.topic.min.insync.replicas,
 	// controller.quorum.election.backoff.max.ms,
 	// controller.quorum.election.timeout.ms, controller.quorum.fetch.timeout.ms).
-	Config *apiextensions.JSON `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
+	Config KafkaSpecKafkaConfig `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
 
 	// The container image used for Kafka pods. If the property is not set, the
 	// default Kafka image version is determined based on the `version` configuration.
@@ -5073,7 +5073,7 @@ const KafkaSpecKafkaAuthorizationTypeSimple KafkaSpecKafkaAuthorizationType = "s
 // cruise.control.metrics.topic.min.insync.replicas,
 // controller.quorum.election.backoff.max.ms,
 // controller.quorum.election.timeout.ms, controller.quorum.fetch.timeout.ms).
-//type KafkaSpecKafkaConfig map[string]interface{}
+type KafkaSpecKafkaConfig map[string]runtime.RawExtension
 
 // Configuration of the Kafka Exporter. Kafka Exporter can provide additional
 // metrics, for example lag of consumer group at topic/partition.
@@ -5173,10 +5173,10 @@ type KafkaSpecKafkaExporterResources struct {
 	Claims []KafkaSpecKafkaExporterResourcesClaimsElem `json:"claims,omitempty" yaml:"claims,omitempty" mapstructure:"claims,omitempty"`
 
 	// Limits corresponds to the JSON schema field "limits".
-	Limits *apiextensions.JSON `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
+	Limits KafkaSpecKafkaExporterResourcesLimits `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
 
 	// Requests corresponds to the JSON schema field "requests".
-	Requests *apiextensions.JSON `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
+	Requests KafkaSpecKafkaExporterResourcesRequests `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
 }
 
 type KafkaSpecKafkaExporterResourcesClaimsElem struct {
@@ -5184,9 +5184,9 @@ type KafkaSpecKafkaExporterResourcesClaimsElem struct {
 	Name *string `json:"name,omitempty" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-//type KafkaSpecKafkaExporterResourcesLimits map[string]interface{}
+type KafkaSpecKafkaExporterResourcesLimits map[string]runtime.RawExtension
 
-//type KafkaSpecKafkaExporterResourcesRequests map[string]interface{}
+type KafkaSpecKafkaExporterResourcesRequests map[string]runtime.RawExtension
 
 // Customization of deployment templates and pods.
 type KafkaSpecKafkaExporterTemplate struct {
@@ -6424,7 +6424,7 @@ type KafkaSpecKafkaListenersElemAuthentication struct {
 
 	// Configuration to be used for a specific listener. All values are prefixed with
 	// `listener.name.<listener_name>`.
-	ListenerConfig *apiextensions.JSON `json:"listenerConfig,omitempty" yaml:"listenerConfig,omitempty" mapstructure:"listenerConfig,omitempty"`
+	ListenerConfig KafkaSpecKafkaListenersElemAuthenticationListenerConfig `json:"listenerConfig,omitempty" yaml:"listenerConfig,omitempty" mapstructure:"listenerConfig,omitempty"`
 
 	// Maximum number of seconds the authenticated session remains valid without
 	// re-authentication. This enables Apache Kafka re-authentication feature, and
@@ -6509,7 +6509,7 @@ type KafkaSpecKafkaListenersElemAuthenticationClientSecret struct {
 
 // Configuration to be used for a specific listener. All values are prefixed with
 // `listener.name.<listener_name>`.
-//type KafkaSpecKafkaListenersElemAuthenticationListenerConfig map[string]interface{}
+type KafkaSpecKafkaListenersElemAuthenticationListenerConfig map[string]runtime.RawExtension
 
 type KafkaSpecKafkaListenersElemAuthenticationSecretsElem struct {
 	// The key under which the secret value is stored in the Kubernetes Secret.
@@ -7070,10 +7070,10 @@ type KafkaSpecKafkaResources struct {
 	Claims []KafkaSpecKafkaResourcesClaimsElem `json:"claims,omitempty" yaml:"claims,omitempty" mapstructure:"claims,omitempty"`
 
 	// Limits corresponds to the JSON schema field "limits".
-	Limits *apiextensions.JSON `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
+	Limits KafkaSpecKafkaResourcesLimits `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
 
 	// Requests corresponds to the JSON schema field "requests".
-	Requests *apiextensions.JSON `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
+	Requests KafkaSpecKafkaResourcesRequests `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
 }
 
 type KafkaSpecKafkaResourcesClaimsElem struct {
@@ -7081,9 +7081,9 @@ type KafkaSpecKafkaResourcesClaimsElem struct {
 	Name *string `json:"name,omitempty" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-//type KafkaSpecKafkaResourcesLimits map[string]interface{}
+type KafkaSpecKafkaResourcesLimits map[string]runtime.RawExtension
 
-//type KafkaSpecKafkaResourcesRequests map[string]interface{}
+type KafkaSpecKafkaResourcesRequests map[string]runtime.RawExtension
 
 // Storage configuration (disk). Cannot be updated. This property is required when
 // node pools are not used.
@@ -8809,7 +8809,7 @@ type KafkaSpecZookeeper struct {
 	// ssl.quorum.protocol, ssl.enabledProtocols, ssl.quorum.enabledProtocols,
 	// ssl.ciphersuites, ssl.quorum.ciphersuites, ssl.hostnameVerification,
 	// ssl.quorum.hostnameVerification).
-	Config *apiextensions.JSON `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
+	Config KafkaSpecZookeeperConfig `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
 
 	// The container image used for ZooKeeper pods. If no image name is explicitly
 	// specified, it is determined based on the Kafka version set in
@@ -8857,7 +8857,7 @@ type KafkaSpecZookeeper struct {
 // ssl.quorum.protocol, ssl.enabledProtocols, ssl.quorum.enabledProtocols,
 // ssl.ciphersuites, ssl.quorum.ciphersuites, ssl.hostnameVerification,
 // ssl.quorum.hostnameVerification).
-//type KafkaSpecZookeeperConfig map[string]interface{}
+type KafkaSpecZookeeperConfig map[string]runtime.RawExtension
 
 // JMX Options for Zookeeper nodes.
 type KafkaSpecZookeeperJmxOptions struct {
@@ -9028,10 +9028,10 @@ type KafkaSpecZookeeperResources struct {
 	Claims []KafkaSpecZookeeperResourcesClaimsElem `json:"claims,omitempty" yaml:"claims,omitempty" mapstructure:"claims,omitempty"`
 
 	// Limits corresponds to the JSON schema field "limits".
-	Limits *apiextensions.JSON `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
+	Limits KafkaSpecZookeeperResourcesLimits `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
 
 	// Requests corresponds to the JSON schema field "requests".
-	Requests *apiextensions.JSON `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
+	Requests KafkaSpecZookeeperResourcesRequests `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
 }
 
 type KafkaSpecZookeeperResourcesClaimsElem struct {
@@ -9039,9 +9039,9 @@ type KafkaSpecZookeeperResourcesClaimsElem struct {
 	Name *string `json:"name,omitempty" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-//type KafkaSpecZookeeperResourcesLimits map[string]interface{}
+type KafkaSpecZookeeperResourcesLimits map[string]runtime.RawExtension
 
-//type KafkaSpecZookeeperResourcesRequests map[string]interface{}
+type KafkaSpecZookeeperResourcesRequests map[string]runtime.RawExtension
 
 // Storage configuration (disk). Cannot be updated.
 type KafkaSpecZookeeperStorage struct {

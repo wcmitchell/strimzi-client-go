@@ -7,17 +7,16 @@ import (
 	"fmt"
 	"reflect"
 
-	apiextensions "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
-//type KafkaTopicMetadata map[string]interface{}
+type KafkaTopicMetadata map[string]runtime.RawExtension
 
 // The specification of the topic.
 type KafkaTopicSpec struct {
 	// The topic configuration.
-	Config *apiextensions.JSON `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
+	Config KafkaTopicSpecConfig `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
 
 	// The number of partitions the topic should have. This cannot be decreased after
 	// topic creation. It can be increased after topic creation, but it is important
@@ -37,7 +36,7 @@ type KafkaTopicSpec struct {
 }
 
 // The topic configuration.
-//type KafkaTopicSpecConfig map[string]interface{}
+type KafkaTopicSpecConfig map[string]runtime.RawExtension
 
 type KafkaTopicStatusConditionsElem struct {
 	// Last time the condition of a type changed from one status to another. The
@@ -88,11 +87,10 @@ func (j *KafkaTopicStatusReplicasChangeState) UnmarshalJSON(b []byte) error {
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:subresource:metadata
 // KafkaTopic
 type KafkaTopic struct {
 	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
-	
 	// APIVersion defines the versioned schema of this representation of an object.
 	// Servers should convert recognized schemas to the latest internal value, and may
 	// reject unrecognized values. More info:
@@ -104,6 +102,9 @@ type KafkaTopic struct {
 	// be updated. In CamelCase. More info:
 	// https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 	Kind *string `json:"kind,omitempty" yaml:"kind,omitempty" mapstructure:"kind,omitempty"`
+
+	// Metadata corresponds to the JSON schema field "metadata".
+	Metadata KafkaTopicMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty" mapstructure:"metadata,omitempty"`
 
 	// The specification of the topic.
 	Spec *KafkaTopicSpec `json:"spec,omitempty" yaml:"spec,omitempty" mapstructure:"spec,omitempty"`

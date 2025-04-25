@@ -7,18 +7,16 @@ import (
 	"fmt"
 	"reflect"
 
-	apiextensions "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:subresource:metadata
 // KafkaMirrorMaker2
 type KafkaMirrorMaker2 struct {
 	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
-
 	// APIVersion defines the versioned schema of this representation of an object.
 	// Servers should convert recognized schemas to the latest internal value, and may
 	// reject unrecognized values. More info:
@@ -31,12 +29,17 @@ type KafkaMirrorMaker2 struct {
 	// https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 	Kind *string `json:"kind,omitempty" yaml:"kind,omitempty" mapstructure:"kind,omitempty"`
 
+	// Metadata corresponds to the JSON schema field "metadata".
+	Metadata KafkaMirrorMaker2Metadata `json:"metadata,omitempty" yaml:"metadata,omitempty" mapstructure:"metadata,omitempty"`
+
 	// The specification of the Kafka MirrorMaker 2 cluster.
 	Spec *KafkaMirrorMaker2Spec `json:"spec,omitempty" yaml:"spec,omitempty" mapstructure:"spec,omitempty"`
 
 	// The status of the Kafka MirrorMaker 2 cluster.
 	Status *KafkaMirrorMaker2Status `json:"status,omitempty" yaml:"status,omitempty" mapstructure:"status,omitempty"`
 }
+
+type KafkaMirrorMaker2Metadata map[string]runtime.RawExtension
 
 // +kubebuilder:object:root=true
 // KafkaMirrorMaker2List contains a list of instances.
@@ -47,8 +50,6 @@ type KafkaMirrorMaker2List struct {
 	// A list of KafkaMirrorMaker2 objects.
 	Items []KafkaMirrorMaker2 `json:"items,omitempty"`
 }
-
-//type KafkaMirrorMaker2Metadata map[string]interface{}
 
 // The specification of the Kafka MirrorMaker 2 cluster.
 type KafkaMirrorMaker2Spec struct {
@@ -136,7 +137,7 @@ type KafkaMirrorMaker2SpecClustersElem struct {
 	// bootstrap.servers, consumer.interceptor.classes, producer.interceptor.classes
 	// (with the exception of: ssl.endpoint.identification.algorithm,
 	// ssl.cipher.suites, ssl.protocol, ssl.enabled.protocols).
-	Config *apiextensions.JSON `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
+	Config KafkaMirrorMaker2SpecClustersElemConfig `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
 
 	// TLS configuration for connecting MirrorMaker 2 connectors to a cluster.
 	Tls *KafkaMirrorMaker2SpecClustersElemTls `json:"tls,omitempty" yaml:"tls,omitempty" mapstructure:"tls,omitempty"`
@@ -342,7 +343,7 @@ const KafkaMirrorMaker2SpecClustersElemAuthenticationTypeTls KafkaMirrorMaker2Sp
 // bootstrap.servers, consumer.interceptor.classes, producer.interceptor.classes
 // (with the exception of: ssl.endpoint.identification.algorithm,
 // ssl.cipher.suites, ssl.protocol, ssl.enabled.protocols).
-//type KafkaMirrorMaker2SpecClustersElemConfig map[string]interface{}
+type KafkaMirrorMaker2SpecClustersElemConfig map[string]runtime.RawExtension
 
 // TLS configuration for connecting MirrorMaker 2 connectors to a cluster.
 type KafkaMirrorMaker2SpecClustersElemTls struct {
@@ -682,7 +683,7 @@ type KafkaMirrorMaker2SpecMirrorsElemCheckpointConnector struct {
 
 	// The Kafka Connector configuration. The following properties cannot be set:
 	// name, connector.class, tasks.max.
-	Config *apiextensions.JSON `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
+	Config KafkaMirrorMaker2SpecMirrorsElemCheckpointConnectorConfig `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
 
 	// Configuration for listing offsets.
 	ListOffsets *KafkaMirrorMaker2SpecMirrorsElemCheckpointConnectorListOffsets `json:"listOffsets,omitempty" yaml:"listOffsets,omitempty" mapstructure:"listOffsets,omitempty"`
@@ -723,7 +724,7 @@ type KafkaMirrorMaker2SpecMirrorsElemCheckpointConnectorAutoRestart struct {
 
 // The Kafka Connector configuration. The following properties cannot be set: name,
 // connector.class, tasks.max.
-//type KafkaMirrorMaker2SpecMirrorsElemCheckpointConnectorConfig map[string]interface{}
+type KafkaMirrorMaker2SpecMirrorsElemCheckpointConnectorConfig map[string]runtime.RawExtension
 
 // Configuration for listing offsets.
 type KafkaMirrorMaker2SpecMirrorsElemCheckpointConnectorListOffsets struct {
@@ -753,7 +754,7 @@ type KafkaMirrorMaker2SpecMirrorsElemHeartbeatConnector struct {
 
 	// The Kafka Connector configuration. The following properties cannot be set:
 	// name, connector.class, tasks.max.
-	Config *apiextensions.JSON `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
+	Config KafkaMirrorMaker2SpecMirrorsElemHeartbeatConnectorConfig `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
 
 	// Configuration for listing offsets.
 	ListOffsets *KafkaMirrorMaker2SpecMirrorsElemHeartbeatConnectorListOffsets `json:"listOffsets,omitempty" yaml:"listOffsets,omitempty" mapstructure:"listOffsets,omitempty"`
@@ -794,7 +795,7 @@ type KafkaMirrorMaker2SpecMirrorsElemHeartbeatConnectorAutoRestart struct {
 
 // The Kafka Connector configuration. The following properties cannot be set: name,
 // connector.class, tasks.max.
-//type KafkaMirrorMaker2SpecMirrorsElemHeartbeatConnectorConfig map[string]interface{}
+type KafkaMirrorMaker2SpecMirrorsElemHeartbeatConnectorConfig map[string]runtime.RawExtension
 
 // Configuration for listing offsets.
 type KafkaMirrorMaker2SpecMirrorsElemHeartbeatConnectorListOffsets struct {
@@ -824,7 +825,7 @@ type KafkaMirrorMaker2SpecMirrorsElemSourceConnector struct {
 
 	// The Kafka Connector configuration. The following properties cannot be set:
 	// name, connector.class, tasks.max.
-	Config *apiextensions.JSON `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
+	Config KafkaMirrorMaker2SpecMirrorsElemSourceConnectorConfig `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
 
 	// Configuration for listing offsets.
 	ListOffsets *KafkaMirrorMaker2SpecMirrorsElemSourceConnectorListOffsets `json:"listOffsets,omitempty" yaml:"listOffsets,omitempty" mapstructure:"listOffsets,omitempty"`
@@ -865,7 +866,7 @@ type KafkaMirrorMaker2SpecMirrorsElemSourceConnectorAutoRestart struct {
 
 // The Kafka Connector configuration. The following properties cannot be set: name,
 // connector.class, tasks.max.
-//type KafkaMirrorMaker2SpecMirrorsElemSourceConnectorConfig map[string]interface{}
+type KafkaMirrorMaker2SpecMirrorsElemSourceConnectorConfig map[string]runtime.RawExtension
 
 // Configuration for listing offsets.
 type KafkaMirrorMaker2SpecMirrorsElemSourceConnectorListOffsets struct {
@@ -924,10 +925,10 @@ type KafkaMirrorMaker2SpecResources struct {
 	Claims []KafkaMirrorMaker2SpecResourcesClaimsElem `json:"claims,omitempty" yaml:"claims,omitempty" mapstructure:"claims,omitempty"`
 
 	// Limits corresponds to the JSON schema field "limits".
-	Limits *apiextensions.JSON `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
+	Limits KafkaMirrorMaker2SpecResourcesLimits `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
 
 	// Requests corresponds to the JSON schema field "requests".
-	Requests *apiextensions.JSON `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
+	Requests KafkaMirrorMaker2SpecResourcesRequests `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
 }
 
 type KafkaMirrorMaker2SpecResourcesClaimsElem struct {
@@ -935,9 +936,9 @@ type KafkaMirrorMaker2SpecResourcesClaimsElem struct {
 	Name *string `json:"name,omitempty" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-//type KafkaMirrorMaker2SpecResourcesLimits map[string]interface{}
+type KafkaMirrorMaker2SpecResourcesLimits map[string]runtime.RawExtension
 
-//type KafkaMirrorMaker2SpecResourcesRequests map[string]interface{}
+type KafkaMirrorMaker2SpecResourcesRequests map[string]runtime.RawExtension
 
 // Template for Kafka Connect and Kafka MirrorMaker 2 resources. The template
 // allows users to specify how the `Pods`, `Service`, and other services are
@@ -4134,7 +4135,7 @@ type KafkaMirrorMaker2StatusConnectorPluginsElem struct {
 	Version *string `json:"version,omitempty" yaml:"version,omitempty" mapstructure:"version,omitempty"`
 }
 
-//type KafkaMirrorMaker2StatusConnectorsElem map[string]interface{}
+type KafkaMirrorMaker2StatusConnectorsElem map[string]runtime.RawExtension
 
 // The status of the Kafka MirrorMaker 2 cluster.
 type KafkaMirrorMaker2Status struct {
@@ -4149,7 +4150,7 @@ type KafkaMirrorMaker2Status struct {
 
 	// List of MirrorMaker 2 connector statuses, as reported by the Kafka Connect REST
 	// API.
-	Connectors []*apiextensions.JSON `json:"connectors,omitempty" yaml:"connectors,omitempty" mapstructure:"connectors,omitempty"`
+	Connectors []KafkaMirrorMaker2StatusConnectorsElem `json:"connectors,omitempty" yaml:"connectors,omitempty" mapstructure:"connectors,omitempty"`
 
 	// Label selector for pods providing this resource.
 	LabelSelector *string `json:"labelSelector,omitempty" yaml:"labelSelector,omitempty" mapstructure:"labelSelector,omitempty"`

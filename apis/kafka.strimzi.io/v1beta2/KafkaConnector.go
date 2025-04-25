@@ -7,18 +7,16 @@ import (
 	"fmt"
 	"reflect"
 
-	apiextensions "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
-
-		metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:subresource:metadata
 // KafkaConnector
 type KafkaConnector struct {
 	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
-
 	// APIVersion defines the versioned schema of this representation of an object.
 	// Servers should convert recognized schemas to the latest internal value, and may
 	// reject unrecognized values. More info:
@@ -31,12 +29,17 @@ type KafkaConnector struct {
 	// https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 	Kind *string `json:"kind,omitempty" yaml:"kind,omitempty" mapstructure:"kind,omitempty"`
 
+	// Metadata corresponds to the JSON schema field "metadata".
+	Metadata KafkaConnectorMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty" mapstructure:"metadata,omitempty"`
+
 	// The specification of the Kafka Connector.
 	Spec *KafkaConnectorSpec `json:"spec,omitempty" yaml:"spec,omitempty" mapstructure:"spec,omitempty"`
 
 	// The status of the Kafka Connector.
 	Status *KafkaConnectorStatus `json:"status,omitempty" yaml:"status,omitempty" mapstructure:"status,omitempty"`
 }
+
+type KafkaConnectorMetadata map[string]runtime.RawExtension
 
 // +kubebuilder:object:root=true
 // KafkaConnectorList contains a list of instances.
@@ -47,8 +50,6 @@ type KafkaConnectorList struct {
 	// A list of KafkaConnector objects.
 	Items []KafkaConnector `json:"items,omitempty"`
 }
-
-//type KafkaConnectorMetadata map[string]interface{}
 
 // The specification of the Kafka Connector.
 type KafkaConnectorSpec struct {
@@ -63,7 +64,7 @@ type KafkaConnectorSpec struct {
 
 	// The Kafka Connector configuration. The following properties cannot be set:
 	// name, connector.class, tasks.max.
-	Config *apiextensions.JSON `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
+	Config KafkaConnectorSpecConfig `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
 
 	// Configuration for listing offsets.
 	ListOffsets *KafkaConnectorSpecListOffsets `json:"listOffsets,omitempty" yaml:"listOffsets,omitempty" mapstructure:"listOffsets,omitempty"`
@@ -104,7 +105,7 @@ type KafkaConnectorSpecAutoRestart struct {
 
 // The Kafka Connector configuration. The following properties cannot be set: name,
 // connector.class, tasks.max.
-//type KafkaConnectorSpecConfig map[string]interface{}
+type KafkaConnectorSpecConfig map[string]runtime.RawExtension
 
 // Configuration for listing offsets.
 type KafkaConnectorSpecListOffsets struct {
@@ -133,7 +134,7 @@ type KafkaConnectorStatus struct {
 	Conditions []KafkaConnectorStatusConditionsElem `json:"conditions,omitempty" yaml:"conditions,omitempty" mapstructure:"conditions,omitempty"`
 
 	// The connector status, as reported by the Kafka Connect REST API.
-	ConnectorStatus *apiextensions.JSON `json:"connectorStatus,omitempty" yaml:"connectorStatus,omitempty" mapstructure:"connectorStatus,omitempty"`
+	ConnectorStatus KafkaConnectorStatusConnectorStatus `json:"connectorStatus,omitempty" yaml:"connectorStatus,omitempty" mapstructure:"connectorStatus,omitempty"`
 
 	// The generation of the CRD that was last reconciled by the operator.
 	ObservedGeneration *int32 `json:"observedGeneration,omitempty" yaml:"observedGeneration,omitempty" mapstructure:"observedGeneration,omitempty"`
@@ -199,7 +200,7 @@ type KafkaConnectorStatusConditionsElem struct {
 }
 
 // The connector status, as reported by the Kafka Connect REST API.
-//type KafkaConnectorStatusConnectorStatus map[string]interface{}
+type KafkaConnectorStatusConnectorStatus map[string]runtime.RawExtension
 
 var enumValues_KafkaConnectorSpecState = []interface{}{
 	"paused",

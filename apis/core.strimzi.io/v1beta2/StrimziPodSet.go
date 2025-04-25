@@ -6,16 +6,16 @@ import (
 	"encoding/json"
 	"fmt"
 
-	apiextensions "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 )
-//type StrimziPodSetMetadata map[string]interface{}
+
+type StrimziPodSetMetadata map[string]runtime.RawExtension
 
 // The specification of the StrimziPodSet.
 type StrimziPodSetSpec struct {
 	// The Pods managed by this StrimziPodSet.
-	Pods []*apiextensions.JSON `json:"pods" yaml:"pods" mapstructure:"pods"`
+	Pods []StrimziPodSetSpecPodsElem `json:"pods" yaml:"pods" mapstructure:"pods"`
 
 	// Selector is a label query which matches all the pods managed by this
 	// `StrimziPodSet`. Only `matchLabels` is supported. If `matchExpressions` is set,
@@ -23,7 +23,7 @@ type StrimziPodSetSpec struct {
 	Selector StrimziPodSetSpecSelector `json:"selector" yaml:"selector" mapstructure:"selector"`
 }
 
-//type StrimziPodSetSpecPodsElem map[string]interface{}
+type StrimziPodSetSpecPodsElem map[string]runtime.RawExtension
 
 // Selector is a label query which matches all the pods managed by this
 // `StrimziPodSet`. Only `matchLabels` is supported. If `matchExpressions` is set,
@@ -72,10 +72,10 @@ func (j *StrimziPodSetSpec) UnmarshalJSON(b []byte) error {
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:subresource:metadata
 // StrimziPodSet
 type StrimziPodSet struct {
-	metav1.TypeMeta		`json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.TypeMeta   `json:",inline"`
 
 	// APIVersion defines the versioned schema of this representation of an object.
 	// Servers should convert recognized schemas to the latest internal value, and may
@@ -88,6 +88,9 @@ type StrimziPodSet struct {
 	// be updated. In CamelCase. More info:
 	// https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 	Kind *string `json:"kind,omitempty" yaml:"kind,omitempty" mapstructure:"kind,omitempty"`
+
+	// Metadata corresponds to the JSON schema field "metadata".
+	Metadata StrimziPodSetMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty" mapstructure:"metadata,omitempty"`
 
 	// The specification of the StrimziPodSet.
 	Spec *StrimziPodSetSpec `json:"spec,omitempty" yaml:"spec,omitempty" mapstructure:"spec,omitempty"`
@@ -105,7 +108,6 @@ type StrimziPodSetList struct {
 	// A list of StrimziPodSet objects.
 	Items []StrimziPodSet `json:"items,omitempty"`
 }
-
 
 // The status of the StrimziPodSet.
 type StrimziPodSetStatus struct {

@@ -7,18 +7,16 @@ import (
 	"fmt"
 	"reflect"
 
-	apiextensions "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:subresource:metadata
 // KafkaMirrorMaker
 type KafkaMirrorMaker struct {
 	metav1.TypeMeta   `json:",inline"`
-		metav1.ObjectMeta `json:"metadata,omitempty"`
-
 	// APIVersion defines the versioned schema of this representation of an object.
 	// Servers should convert recognized schemas to the latest internal value, and may
 	// reject unrecognized values. More info:
@@ -31,12 +29,17 @@ type KafkaMirrorMaker struct {
 	// https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 	Kind *string `json:"kind,omitempty" yaml:"kind,omitempty" mapstructure:"kind,omitempty"`
 
+	// Metadata corresponds to the JSON schema field "metadata".
+	Metadata KafkaMirrorMakerMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty" mapstructure:"metadata,omitempty"`
+
 	// The specification of Kafka MirrorMaker.
 	Spec *KafkaMirrorMakerSpec `json:"spec,omitempty" yaml:"spec,omitempty" mapstructure:"spec,omitempty"`
 
 	// The status of Kafka MirrorMaker.
 	Status *KafkaMirrorMakerStatus `json:"status,omitempty" yaml:"status,omitempty" mapstructure:"status,omitempty"`
 }
+
+type KafkaMirrorMakerMetadata map[string]runtime.RawExtension
 
 // +kubebuilder:object:root=true
 // KafkaMirrorMakerList contains a list of instances.
@@ -47,8 +50,6 @@ type KafkaMirrorMakerList struct {
 	// A list of KafkaMirrorMaker objects.
 	Items []KafkaMirrorMaker `json:"items,omitempty"`
 }
-
-//type KafkaMirrorMakerMetadata map[string]interface{}
 
 // The specification of Kafka MirrorMaker.
 type KafkaMirrorMakerSpec struct {
@@ -126,7 +127,7 @@ type KafkaMirrorMakerSpecConsumer struct {
 	// interceptor.classes (with the exception of:
 	// ssl.endpoint.identification.algorithm, ssl.cipher.suites, ssl.protocol,
 	// ssl.enabled.protocols).
-	Config *apiextensions.JSON `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
+	Config KafkaMirrorMakerSpecConsumerConfig `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
 
 	// A unique string that identifies the consumer group this consumer belongs to.
 	GroupId string `json:"groupId" yaml:"groupId" mapstructure:"groupId"`
@@ -340,7 +341,7 @@ const KafkaMirrorMakerSpecConsumerAuthenticationTypeTls KafkaMirrorMakerSpecCons
 // be set: ssl., bootstrap.servers, group.id, sasl., security., interceptor.classes
 // (with the exception of: ssl.endpoint.identification.algorithm,
 // ssl.cipher.suites, ssl.protocol, ssl.enabled.protocols).
-//type KafkaMirrorMakerSpecConsumerConfig map[string]interface{}
+type KafkaMirrorMakerSpecConsumerConfig map[string]runtime.RawExtension
 
 // TLS configuration for connecting MirrorMaker to the cluster.
 type KafkaMirrorMakerSpecConsumerTls struct {
@@ -500,7 +501,7 @@ type KafkaMirrorMakerSpecProducer struct {
 	// be set: ssl., bootstrap.servers, sasl., security., interceptor.classes (with
 	// the exception of: ssl.endpoint.identification.algorithm, ssl.cipher.suites,
 	// ssl.protocol, ssl.enabled.protocols).
-	Config *apiextensions.JSON `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
+	Config KafkaMirrorMakerSpecProducerConfig `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
 
 	// TLS configuration for connecting MirrorMaker to the cluster.
 	Tls *KafkaMirrorMakerSpecProducerTls `json:"tls,omitempty" yaml:"tls,omitempty" mapstructure:"tls,omitempty"`
@@ -705,7 +706,7 @@ const KafkaMirrorMakerSpecProducerAuthenticationTypeTls KafkaMirrorMakerSpecProd
 // be set: ssl., bootstrap.servers, sasl., security., interceptor.classes (with the
 // exception of: ssl.endpoint.identification.algorithm, ssl.cipher.suites,
 // ssl.protocol, ssl.enabled.protocols).
-//type KafkaMirrorMakerSpecProducerConfig map[string]interface{}
+type KafkaMirrorMakerSpecProducerConfig map[string]runtime.RawExtension
 
 // TLS configuration for connecting MirrorMaker to the cluster.
 type KafkaMirrorMakerSpecProducerTls struct {
@@ -755,10 +756,10 @@ type KafkaMirrorMakerSpecResources struct {
 	Claims []KafkaMirrorMakerSpecResourcesClaimsElem `json:"claims,omitempty" yaml:"claims,omitempty" mapstructure:"claims,omitempty"`
 
 	// Limits corresponds to the JSON schema field "limits".
-	Limits *apiextensions.JSON `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
+	Limits KafkaMirrorMakerSpecResourcesLimits `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
 
 	// Requests corresponds to the JSON schema field "requests".
-	Requests *apiextensions.JSON `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
+	Requests KafkaMirrorMakerSpecResourcesRequests `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
 }
 
 type KafkaMirrorMakerSpecResourcesClaimsElem struct {
@@ -766,9 +767,9 @@ type KafkaMirrorMakerSpecResourcesClaimsElem struct {
 	Name *string `json:"name,omitempty" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-//type KafkaMirrorMakerSpecResourcesLimits map[string]interface{}
+type KafkaMirrorMakerSpecResourcesLimits map[string]runtime.RawExtension
 
-//type KafkaMirrorMakerSpecResourcesRequests map[string]interface{}
+type KafkaMirrorMakerSpecResourcesRequests map[string]runtime.RawExtension
 
 // Template to specify how Kafka MirrorMaker resources, `Deployments` and `Pods`,
 // are generated.

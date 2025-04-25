@@ -8,15 +8,15 @@ import (
 	"reflect"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:subresource:metadata
 // KafkaUser
 type KafkaUser struct {
 	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
-
 	// APIVersion defines the versioned schema of this representation of an object.
 	// Servers should convert recognized schemas to the latest internal value, and may
 	// reject unrecognized values. More info:
@@ -29,12 +29,17 @@ type KafkaUser struct {
 	// https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 	Kind *string `json:"kind,omitempty" yaml:"kind,omitempty" mapstructure:"kind,omitempty"`
 
+	// Metadata corresponds to the JSON schema field "metadata".
+	Metadata KafkaUserMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty" mapstructure:"metadata,omitempty"`
+
 	// The specification of the user.
 	Spec *KafkaUserSpec `json:"spec,omitempty" yaml:"spec,omitempty" mapstructure:"spec,omitempty"`
 
 	// The status of the Kafka User.
 	Status *KafkaUserStatus `json:"status,omitempty" yaml:"status,omitempty" mapstructure:"status,omitempty"`
 }
+
+type KafkaUserMetadata map[string]runtime.RawExtension
 
 // +kubebuilder:object:root=true
 // KafkaUserList contains a list of instances.
@@ -45,8 +50,6 @@ type KafkaUserList struct {
 	// A list of KafkaUser objects.
 	Items []KafkaUser `json:"items,omitempty"`
 }
-
-//type KafkaUserMetadata map[string]interface{}
 
 // The specification of the user.
 type KafkaUserSpec struct {

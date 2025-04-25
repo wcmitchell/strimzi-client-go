@@ -6,18 +6,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
-	apiextensions "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+
 )
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:subresource:metadata
 // KafkaBridge
 type KafkaBridge struct {
 	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
-
 	// APIVersion defines the versioned schema of this representation of an object.
 	// Servers should convert recognized schemas to the latest internal value, and may
 	// reject unrecognized values. More info:
@@ -29,6 +29,9 @@ type KafkaBridge struct {
 	// be updated. In CamelCase. More info:
 	// https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 	Kind *string `json:"kind,omitempty" yaml:"kind,omitempty" mapstructure:"kind,omitempty"`
+
+	// Metadata corresponds to the JSON schema field "metadata".
+	Metadata KafkaBridgeMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty" mapstructure:"metadata,omitempty"`
 
 	// The specification of the Kafka Bridge.
 	Spec *KafkaBridgeSpec `json:"spec,omitempty" yaml:"spec,omitempty" mapstructure:"spec,omitempty"`
@@ -47,7 +50,7 @@ type KafkaBridgeList struct {
 	Items []KafkaBridge `json:"items,omitempty"`
 }
 
-//type KafkaBridgeMetadata map[string]interface{}
+type KafkaBridgeMetadata map[string]runtime.RawExtension
 
 // The specification of the Kafka Bridge.
 type KafkaBridgeSpec struct {
@@ -119,12 +122,12 @@ type KafkaBridgeSpec struct {
 type KafkaBridgeSpecAdminClient struct {
 	// The Kafka AdminClient configuration used for AdminClient instances created by
 	// the bridge.
-	Config *apiextensions.JSON `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
+	Config KafkaBridgeSpecAdminClientConfig `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
 }
 
 // The Kafka AdminClient configuration used for AdminClient instances created by
 // the bridge.
-//type KafkaBridgeSpecAdminClientConfig map[string]interface{}
+type KafkaBridgeSpecAdminClientConfig map[string]runtime.RawExtension
 
 // Authentication configuration for connecting to the cluster.
 type KafkaBridgeSpecAuthentication struct {
@@ -328,7 +331,7 @@ type KafkaBridgeSpecConsumer struct {
 	// bootstrap.servers, group.id, sasl., security. (with the exception of:
 	// ssl.endpoint.identification.algorithm, ssl.cipher.suites, ssl.protocol,
 	// ssl.enabled.protocols).
-	Config *apiextensions.JSON `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
+	Config KafkaBridgeSpecConsumerConfig `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
 
 	// Whether the HTTP consumer should be enabled or disabled. The default is enabled
 	// (`true`).
@@ -344,7 +347,7 @@ type KafkaBridgeSpecConsumer struct {
 // bootstrap.servers, group.id, sasl., security. (with the exception of:
 // ssl.endpoint.identification.algorithm, ssl.cipher.suites, ssl.protocol,
 // ssl.enabled.protocols).
-//type KafkaBridgeSpecConsumerConfig map[string]interface{}
+type KafkaBridgeSpecConsumerConfig map[string]runtime.RawExtension
 
 // The HTTP related configuration.
 type KafkaBridgeSpecHttp struct {
@@ -463,7 +466,7 @@ type KafkaBridgeSpecProducer struct {
 	// bootstrap.servers, sasl., security. (with the exception of:
 	// ssl.endpoint.identification.algorithm, ssl.cipher.suites, ssl.protocol,
 	// ssl.enabled.protocols).
-	Config *apiextensions.JSON `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
+	Config KafkaBridgeSpecProducerConfig `json:"config,omitempty" yaml:"config,omitempty" mapstructure:"config,omitempty"`
 
 	// Whether the HTTP producer should be enabled or disabled. The default is enabled
 	// (`true`).
@@ -475,7 +478,7 @@ type KafkaBridgeSpecProducer struct {
 // bootstrap.servers, sasl., security. (with the exception of:
 // ssl.endpoint.identification.algorithm, ssl.cipher.suites, ssl.protocol,
 // ssl.enabled.protocols).
-//type KafkaBridgeSpecProducerConfig map[string]interface{}
+type KafkaBridgeSpecProducerConfig map[string]runtime.RawExtension
 
 // Configuration of the node label which will be used as the client.rack consumer
 // configuration.
@@ -515,10 +518,10 @@ type KafkaBridgeSpecResources struct {
 	Claims []KafkaBridgeSpecResourcesClaimsElem `json:"claims,omitempty" yaml:"claims,omitempty" mapstructure:"claims,omitempty"`
 
 	// Limits corresponds to the JSON schema field "limits".
-	Limits *apiextensions.JSON `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
+	Limits KafkaBridgeSpecResourcesLimits `json:"limits,omitempty" yaml:"limits,omitempty" mapstructure:"limits,omitempty"`
 
 	// Requests corresponds to the JSON schema field "requests".
-	Requests *apiextensions.JSON `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
+	Requests KafkaBridgeSpecResourcesRequests `json:"requests,omitempty" yaml:"requests,omitempty" mapstructure:"requests,omitempty"`
 }
 
 type KafkaBridgeSpecResourcesClaimsElem struct {
@@ -526,9 +529,9 @@ type KafkaBridgeSpecResourcesClaimsElem struct {
 	Name *string `json:"name,omitempty" yaml:"name,omitempty" mapstructure:"name,omitempty"`
 }
 
-//type KafkaBridgeSpecResourcesLimits map[string]interface{}
+type KafkaBridgeSpecResourcesLimits map[string]runtime.RawExtension
 
-//type KafkaBridgeSpecResourcesRequests map[string]interface{}
+type KafkaBridgeSpecResourcesRequests map[string]runtime.RawExtension
 
 // Template for Kafka Bridge resources. The template allows users to specify how a
 // `Deployment` and `Pod` is generated.

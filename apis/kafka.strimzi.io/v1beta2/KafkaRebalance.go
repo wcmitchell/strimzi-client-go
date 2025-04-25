@@ -7,18 +7,16 @@ import (
 	"fmt"
 	"reflect"
 
-	apiextensions "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:subresource:metadata
 // KafkaRebalance
 type KafkaRebalance struct {
 	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
-
 	// APIVersion defines the versioned schema of this representation of an object.
 	// Servers should convert recognized schemas to the latest internal value, and may
 	// reject unrecognized values. More info:
@@ -31,12 +29,17 @@ type KafkaRebalance struct {
 	// https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
 	Kind *string `json:"kind,omitempty" yaml:"kind,omitempty" mapstructure:"kind,omitempty"`
 
+	// Metadata corresponds to the JSON schema field "metadata".
+	Metadata KafkaRebalanceMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty" mapstructure:"metadata,omitempty"`
+
 	// The specification of the Kafka rebalance.
 	Spec *KafkaRebalanceSpec `json:"spec,omitempty" yaml:"spec,omitempty" mapstructure:"spec,omitempty"`
 
 	// The status of the Kafka rebalance.
 	Status *KafkaRebalanceStatus `json:"status,omitempty" yaml:"status,omitempty" mapstructure:"status,omitempty"`
 }
+
+type KafkaRebalanceMetadata map[string]runtime.RawExtension
 
 // +kubebuilder:object:root=true
 // KafkaRebalanceList contains a list of instances.
@@ -47,8 +50,6 @@ type KafkaRebalanceList struct {
 	// A list of KafkaRebalance objects.
 	Items []KafkaRebalance `json:"items,omitempty"`
 }
-
-//type KafkaRebalanceMetadata map[string]interface{}
 
 // The specification of the Kafka rebalance.
 type KafkaRebalanceSpec struct {
@@ -203,7 +204,7 @@ type KafkaRebalanceStatus struct {
 	ObservedGeneration *int32 `json:"observedGeneration,omitempty" yaml:"observedGeneration,omitempty" mapstructure:"observedGeneration,omitempty"`
 
 	// A JSON object describing the optimization result.
-	OptimizationResult *apiextensions.JSON `json:"optimizationResult,omitempty" yaml:"optimizationResult,omitempty" mapstructure:"optimizationResult,omitempty"`
+	OptimizationResult KafkaRebalanceStatusOptimizationResult `json:"optimizationResult,omitempty" yaml:"optimizationResult,omitempty" mapstructure:"optimizationResult,omitempty"`
 
 	// The session identifier for requests to Cruise Control pertaining to this
 	// KafkaRebalance resource. This is used by the Kafka Rebalance operator to track
@@ -232,7 +233,7 @@ type KafkaRebalanceStatusConditionsElem struct {
 }
 
 // A JSON object describing the optimization result.
-//type KafkaRebalanceStatusOptimizationResult map[string]interface{}
+type KafkaRebalanceStatusOptimizationResult map[string]runtime.RawExtension
 
 var enumValues_KafkaRebalanceSpecMode = []interface{}{
 	"full",
